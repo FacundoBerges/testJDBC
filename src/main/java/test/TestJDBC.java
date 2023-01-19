@@ -1,52 +1,58 @@
 package test;
 
-import data.UserDAO;
+import data.*;
 import domain.User;
-import java.util.List;
+import java.sql.*;
 
 /**
  * @author Facundo
  */
-public class TestJDBC {
-
-    public static void main(String[] args) {
-        UserDAO userDao = new UserDAO();
+public class TestJDBC 
+{
+    public static void main(String[] args) 
+    {
+        Connection conn = null;
         
-        //test select
-        List<User> users = userDao.select();
-        users.forEach(user -> {
-            System.out.println(user);
-        });
-        System.out.println("");
+        try 
+        {
+            conn = Connect.getConnection();
+            
+            if ( conn.getAutoCommit() )
+                conn.setAutoCommit(false);
+            
+            UserDAO userDAO = new UserDAO(conn);
+            
+            User changeUserInfo = new User(8);
+            changeUserInfo.setUsername("Juan Manuel");
+            changeUserInfo.setPassword("MySurname");
+            
+            userDAO.update(changeUserInfo);
+            
+            
+            User addUser = new User();
+            addUser.setUsername("Gino");
+            //addUser.setPassword("H3LL0_W0RLD1111111111111111111111111111111111111111111111111111111111"); // Doesn't commit updates to Database
+            addUser.setPassword("H3LL0_W0RLD"); // Commit ok
+            
+            userDAO.insert(addUser);
+            
+            conn.commit();
+            System.out.println("Changes commited correctly.");
+            conn.close();
+        } 
+        catch (SQLException ex) 
+        {
+            ex.printStackTrace(System.out);
+            
+            try 
+            {
+                conn.rollback();
+            } 
+            catch (SQLException ex1) 
+            {
+                ex1.printStackTrace(System.out);
+            }
+        }
         
-        //test insert
-        User userAdd = new User("Manuel", "123456");
-        userDao.insert(userAdd);
-        
-        users = userDao.select();
-        users.forEach(user -> {
-            System.out.println(user);
-        });
-        System.out.println("");
-
-        //test update
-        User modifiedUser = new User(4, "Rick", "123456");
-        userDao.update(modifiedUser);
-        
-        users = userDao.select();
-        users.forEach(user -> {
-            System.out.println(user);
-        });
-        System.out.println("");
-        
-        //test delete
-        User toDeleteUser = new User(7);
-        userDao.delete(toDeleteUser);
-        
-        users = userDao.select();
-        users.forEach(user -> {
-            System.out.println(user);
-        });
-        System.out.println("");
     }
 }

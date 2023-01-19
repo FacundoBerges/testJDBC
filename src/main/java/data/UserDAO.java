@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package data;
 
 import domain.User;
@@ -9,8 +5,7 @@ import java.util.*;
 import java.sql.*;
 
 /**
- *
- * @author facup
+ * @author Facundo
  */
 public class UserDAO 
 {
@@ -18,13 +13,23 @@ public class UserDAO
     private static final String SQL_INSERT = "INSERT INTO `test`.`users` (`user`, `password`) VALUES (?, ?);";
     private static final String SQL_UPDATE = "UPDATE `test`.`users` SET `user` = ?, `password` = ? WHERE (`id_user` = ?);";
     private static final String SQL_DELETE = "DELETE FROM `test`.`users` WHERE `id_user` = ?;";
+    private Connection transConnection = null;
+
+    
+    public UserDAO() {
+    }
+    
+    public UserDAO(Connection transConnection) {
+        this.transConnection = transConnection;
+    }
+    
     
     /**
      * select all users from a table and return them as a collection (List).
      * 
      * @return List   Users list.
      */
-    public List<User> select()
+    public List<User> select() throws SQLException
     {
         List<User> userList = new ArrayList<>();
         Connection conn = null;
@@ -34,7 +39,7 @@ public class UserDAO
         
         try
         {
-            conn = Connect.getConnection();
+            conn = this.transConnection != null ? this.transConnection : Connect.getConnection();
             pstmt = conn.prepareStatement(SQL_SELECT);
             rs = pstmt.executeQuery();
             
@@ -49,19 +54,13 @@ public class UserDAO
                 userList.add(user);
             }
         }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace(System.out);
-        }
         finally
         {
             try 
             {
-                if(rs != null)
-                    Connect.close(rs);
-                if(rs != null)
-                    Connect.close(pstmt);
-                if(rs != null)
+                Connect.close(rs);
+                Connect.close(pstmt);
+                if(this.transConnection == null)
                     Connect.close(conn);
             } 
             catch (SQLException ex) 
@@ -79,7 +78,7 @@ public class UserDAO
      * @param user  user to be added.
      * @return      quantity of inserted users.
      */
-    public int insert(User user)
+    public int insert(User user) throws SQLException
     {
         int result = 0;
         Connection conn = null;
@@ -87,7 +86,7 @@ public class UserDAO
         
         try
         {
-            conn = Connect.getConnection();
+            conn = this.transConnection != null ? this.transConnection : Connect.getConnection();
             pstmt = conn.prepareStatement(SQL_INSERT);
             
             pstmt.setString(1, user.getUsername());
@@ -95,16 +94,13 @@ public class UserDAO
             
             result = pstmt.executeUpdate();
         }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace(System.out);
-        }
         finally
         {
             try 
             {
                 Connect.close(pstmt);
-                Connect.close(conn);
+                if(this.transConnection == null)
+                    Connect.close(conn);
             } 
             catch (SQLException ex) 
             {
@@ -121,7 +117,7 @@ public class UserDAO
      * @param user  user to be updated.
      * @return      quantity of modified users.
      */
-    public int update(User user)
+    public int update(User user) throws SQLException
     {
         int result = 0;
         Connection conn = null;
@@ -129,7 +125,7 @@ public class UserDAO
         
         try
         {
-            conn = Connect.getConnection();
+            conn = this.transConnection != null ? this.transConnection : Connect.getConnection();
             pstmt = conn.prepareStatement(SQL_UPDATE);
             
             pstmt.setString(1, user.getUsername());
@@ -138,16 +134,13 @@ public class UserDAO
             
             result = pstmt.executeUpdate();
         }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace(System.out);
-        }
         finally
         {
             try 
             {
                 Connect.close(pstmt);
-                Connect.close(conn);
+                if(this.transConnection == null)
+                    Connect.close(conn);
             } 
             catch (SQLException ex) 
             {
@@ -164,7 +157,7 @@ public class UserDAO
      * @param user  user to delete
      * @return      quantity of users deleted
      */
-    public int delete(User user)
+    public int delete(User user) throws SQLException
     {
         int result = 0;
         Connection conn = null;
@@ -172,23 +165,20 @@ public class UserDAO
         
         try
         {
-            conn = Connect.getConnection();
+            conn = this.transConnection != null ? this.transConnection : Connect.getConnection();
             pstmt = conn.prepareStatement(SQL_DELETE);
             
             pstmt.setInt(1, user.getIdUser());
             
             result = pstmt.executeUpdate();
         }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace(System.out);
-        }
         finally
         {
             try 
             {
                 Connect.close(pstmt);
-                Connect.close(conn);
+                if(this.transConnection == null)
+                    Connect.close(conn);
             } 
             catch (SQLException ex) 
             {
