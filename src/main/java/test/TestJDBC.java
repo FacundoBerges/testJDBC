@@ -1,8 +1,9 @@
 package test;
 
 import data.*;
-import domain.User;
+import domain.UserDTO;
 import java.sql.*;
+import java.util.List;
 
 /**
  * @author Facundo
@@ -20,24 +21,17 @@ public class TestJDBC
             if ( conn.getAutoCommit() )
                 conn.setAutoCommit(false);
             
-            UserDAO userDAO = new UserDAO(conn);
-            
-            User changeUserInfo = new User(8);
-            changeUserInfo.setUsername("Juan Manuel");
-            changeUserInfo.setPassword("MySurname");
-            
-            userDAO.update(changeUserInfo);
+            IUserDAO userDAO = new UserDaoJDBC(conn);
             
             
-            User addUser = new User();
-            addUser.setUsername("Gino");
-            //addUser.setPassword("H3LL0_W0RLD1111111111111111111111111111111111111111111111111111111111"); // Doesn't commit updates to Database
-            addUser.setPassword("H3LL0_W0RLD"); // Commit ok
+            List<UserDTO> users = userDAO.select();
             
-            userDAO.insert(addUser);
+            users.forEach((UserDTO user) -> {
+                System.out.println(user);
+            });
+            
             
             conn.commit();
-            System.out.println("Changes commited correctly.");
             conn.close();
         } 
         catch (SQLException ex) 

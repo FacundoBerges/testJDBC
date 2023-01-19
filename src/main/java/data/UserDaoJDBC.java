@@ -1,13 +1,13 @@
 package data;
 
-import domain.User;
+import domain.UserDTO;
 import java.util.*;
 import java.sql.*;
 
 /**
  * @author Facundo
  */
-public class UserDAO 
+public class UserDaoJDBC implements IUserDAO
 {
     private static final String SQL_SELECT = "SELECT `id_user`, `user`, `password` FROM `test`.`users`;";
     private static final String SQL_INSERT = "INSERT INTO `test`.`users` (`user`, `password`) VALUES (?, ?);";
@@ -16,26 +16,22 @@ public class UserDAO
     private Connection transConnection = null;
 
     
-    public UserDAO() {
+    public UserDaoJDBC() {
     }
     
-    public UserDAO(Connection transConnection) {
+    public UserDaoJDBC(Connection transConnection) {
         this.transConnection = transConnection;
     }
     
     
-    /**
-     * select all users from a table and return them as a collection (List).
-     * 
-     * @return List   Users list.
-     */
-    public List<User> select() throws SQLException
+    @Override
+    public List<UserDTO> select() throws SQLException
     {
-        List<User> userList = new ArrayList<>();
+        List<UserDTO> userList = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        User user = null;
+        UserDTO user = null;
         
         try
         {
@@ -49,7 +45,7 @@ public class UserDAO
                 String username = rs.getString("user");
                 String password = rs.getString("password");
                 
-                user = new User(idUser, username, password);
+                user = new UserDTO(idUser, username, password);
                 
                 userList.add(user);
             }
@@ -72,13 +68,8 @@ public class UserDAO
         return userList;
     }
     
-    /**
-     * Inserts an user on a table.
-     * 
-     * @param user  user to be added.
-     * @return      quantity of inserted users.
-     */
-    public int insert(User user) throws SQLException
+    @Override
+    public int insert(UserDTO user) throws SQLException
     {
         int result = 0;
         Connection conn = null;
@@ -111,13 +102,8 @@ public class UserDAO
         return result;
     }
     
-    /**
-     * updates an user information on a table.
-     * 
-     * @param user  user to be updated.
-     * @return      quantity of modified users.
-     */
-    public int update(User user) throws SQLException
+    @Override
+    public int update(UserDTO user) throws SQLException
     {
         int result = 0;
         Connection conn = null;
@@ -151,13 +137,8 @@ public class UserDAO
         return result;
     }
     
-    /**
-     * Deletes an user from a table.
-     * 
-     * @param user  user to delete
-     * @return      quantity of users deleted
-     */
-    public int delete(User user) throws SQLException
+    @Override
+    public int delete(UserDTO user) throws SQLException
     {
         int result = 0;
         Connection conn = null;

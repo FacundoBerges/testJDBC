@@ -3,28 +3,28 @@ package domain;
 /**
  * @author Facundo
  */
-public class User 
+public class UserDTO 
 {
     private int idUser;
     private String username;
     private String password;
 
     
-    public User() {
+    public UserDTO() {
     }
 
-    public User(int idUser) {
+    public UserDTO(int idUser) {
         this.idUser = idUser;
     }
 
-    public User(String username, String password) {
+    public UserDTO(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
     
     
-    public User(int idUser, String username, String password) {
+    public UserDTO(int idUser, String username, String password) {
         this.idUser = idUser;
         this.username = username;
         this.password = password;
