@@ -1,4 +1,5 @@
 data\Connect.class
-domain\User.class
+data\IUserDAO.class
+data\UserDaoJDBC.class
 test\TestJDBC.class
-data\UserDAO.class
+domain\UserDTO.class
